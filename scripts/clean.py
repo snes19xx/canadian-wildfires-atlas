@@ -28,3 +28,30 @@ def load_nfdb():
     print(f"NFDB: {n_raw} raw -> {n_year} >= {config.MIN_YEAR} -> {len(df)} after prescribed filter")
     assert 20_500 <= len(df) <= 21_650
     return df
+
+def load_nbac_annual():
+    """Return NBAC adjusted-ha per year (national + per admin), ascending years."""
+    s = pd.read_excel(config.NBAC_XLSX, sheet_name="sumstats_admin_name", skiprows=2)
+    s = s[pd.to_numeric(s.YEAR, errors="coerce").notna()].copy()
+    s["YEAR"] = s.YEAR.astype(int)
+    for c in s.columns[1:]:
+        s[c] = pd.to_numeric(s[c], errors="coerce")
+    s = s.sort_values("YEAR").reset_index(drop=True)
+    assert s.YEAR.min() == 1972 and s.YEAR.max() == 2025
+    return s
+
+def load_firms():
+    """Return 2023 VIIRS detections (vegetation fires, confidence >= nominal)."""
+    import pyogrio
+
+    df = pyogrio.read_dataframe(
+        config.FIRMS_SHP,
+        columns=["LATITUDE", "LONGITUDE", "ACQ_DATE", "FRP", "CONFIDENCE", "TYPE"],
+        read_geometry=False,
+    )
+    n_raw = len(df)
+    df = df[(df.TYPE == 0) & (df.CONFIDENCE != "l")].copy()
+    df["doy"] = pd.to_datetime(df.ACQ_DATE).dt.dayofyear.astype(int)
+    print(f"FIRMS: {n_raw} raw -> {len(df)} kept")
+    assert 1_200_000 <= len(df) <= 1_754_727
+    return df.reset_index(drop=True)
