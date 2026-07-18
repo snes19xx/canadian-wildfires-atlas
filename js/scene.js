@@ -1,7 +1,5 @@
 import * as d3 from "d3";
 import { colors, emberRamp, themeName } from "./theme.js";
-
-// Scene coords are [0,1]² frame; x is stretched by the frame aspect.
 // Canvas world coords: X = u * ASPECT, Y = 1 - v (y grows down).
 export const ASPECT = 1.4979;
 

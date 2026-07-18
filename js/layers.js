@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import { ASPECT, makeSprite } from "./scene.js";
-import { colors, emberRamp, themeName } from "./theme.js";
+import { colors, emberRamp, severityRamp, themeName } from "./theme.js";
 
 // Smooth sampling blends masked zeros through the scale (diverging: fake
 // "decreasing" rims; classes: fake lower classes), so these draw nearest.
@@ -59,7 +59,8 @@ export class TextureLayers {
       }
     } else {
       const ramp = emberRamp();
-      const cls = [ramp[1], ramp[2], ramp[4]];
+      const cls =
+        name === "severity" ? severityRamp() : [ramp[1], ramp[2], ramp[4]];
       for (let v = 1; v < 256; v++) set(v, cls[v < 128 ? 0 : v < 213 ? 1 : 2]);
     }
     return out;
@@ -161,7 +162,8 @@ export class TextureLayers {
               <span class="k"><span class="sw" style="background:${c.trendPos}"></span>increasing</span>`;
     }
     if (m.kind === "classes") {
-      const cls = [ramp[1], ramp[2], ramp[4]];
+      const cls =
+        name === "severity" ? severityRamp() : [ramp[1], ramp[2], ramp[4]];
       return m.legend
         .map(
           (l, i) =>
