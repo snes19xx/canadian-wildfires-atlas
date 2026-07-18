@@ -16,6 +16,10 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles/main.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.css"
+    />
 
     <script type="importmap">
       {
@@ -25,4 +29,363 @@
       }
     </script>
   </head>
+  <body>
+    <div class="fold">
+      <header class="masthead">
+        <div>
+          <h1>Atlas of Canadian Wildfires</h1>
+          <p class="dek">
+            Every large wildfire recorded in Canada since 1959, drawn from the
+            National Fire Database. 20,946 fires; about 160 million hectares.
+          </p>
+        </div>
+        <div class="mast-tools">
+          <button
+            class="tool-btn"
+            id="theme-btn"
+            aria-label="Toggle color theme"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="14"
+              height="14"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+            Dark
+          </button>
+          <a
+            class="tool-btn"
+            href="https://github.com/snes19xx/canadian-wildfires-atlas"
+            target="_blank"
+            rel="noopener"
+          >
+            <svg
+              viewBox="0 0 16 16"
+              width="14"
+              height="14"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"
+              />
+            </svg>
+            GitHub
+          </a>
+        </div>
+      </header>
+
+      <section class="scene" id="scene">
+        <div id="scene-canvas"></div>
+
+        <div class="hud" id="hud">
+          <div class="year" id="hud-big">1959</div>
+          <div class="stat">
+            <b id="hud-a">0</b>
+            <span id="hud-a-label">large fires since 1959</span>
+          </div>
+          <div class="stat">
+            <b id="hud-b">0.0</b> <span id="hud-b-label">Mha burned</span>
+          </div>
+        </div>
+
+        <div class="controls-right">
+          <div
+            class="chips layerpick"
+            id="layer-pick"
+            role="radiogroup"
+            aria-label="Map layer"
+          >
+            <button
+              class="chip active"
+              data-layer="embers"
+              role="radio"
+              aria-checked="true"
+            >
+              Embers
+            </button>
+            <button
+              class="chip"
+              data-layer="density"
+              role="radio"
+              aria-checked="false"
+            >
+              Density
+            </button>
+            <button
+              class="chip"
+              data-layer="hotspots"
+              role="radio"
+              aria-checked="false"
+            >
+              Hotspots
+            </button>
+            <button
+              class="chip"
+              data-layer="trend"
+              role="radio"
+              aria-checked="false"
+            >
+              Trend
+            </button>
+            <button
+              class="chip"
+              data-layer="reburns"
+              role="radio"
+              aria-checked="false"
+            >
+              Reburns
+            </button>
+            <button
+              class="chip"
+              data-layer="severity"
+              role="radio"
+              aria-checked="false"
+            >
+              Severity
+            </button>
+          </div>
+          <div class="chips" id="mode-chips">
+            <button class="chip" id="mode-2023">2023 day by day</button>
+          </div>
+        </div>
+
+        <div class="legend-box" id="legend-box"></div>
+
+        <div class="timeline">
+          <button class="playbtn" id="play" aria-label="Play">▶</button>
+          <span class="tick" id="tick-lo">1959</span>
+          <div class="track">
+            <svg id="track-spark" preserveAspectRatio="none"></svg>
+            <input
+              type="range"
+              id="scrub"
+              min="1959"
+              max="2025.99"
+              step="0.01"
+              value="1959"
+              aria-label="Year"
+            />
+          </div>
+          <span class="tick" id="tick-hi">2025</span>
+        </div>
+      </section>
+    </div>
+
+    <article>
+      <h2>2023 doubled the record</h2>
+      <p>
+        Canadian fire agencies report every wildfire that grows past 200
+        hectares to a national database. The record runs from 1959 to 2025 and
+        holds 20,946 large fires, together covering about 160 million hectares.
+        2023 sits far outside the rest of it: 17.6 million hectares burned in
+        one season, more than twice the previous record. 2025 is now the
+        second-worst year, and 2024 also made the top seven, so three of the
+        seven worst years on record are the last three.
+      </p>
+
+      <figure class="viz" id="fig-annual">
+        <h3>Sixty-six years, one bar each</h3>
+        <p class="sub">
+          Area burned by large fires (≥ 200 ha), millions of hectares per year.
+          Click a bar to scrub the map.
+        </p>
+        <svg></svg>
+        <p class="src">
+          NFDB point data (≥ 200 ha), CWFIS / Canadian Forest Service
+        </p>
+        <details class="data-table">
+          <summary>Data table: fires and area burned by year</summary>
+          <div id="annual-table"></div>
+        </details>
+      </figure>
+
+      <h2>Bigger fires, not more of them</h2>
+      <p>
+        The number of large fires per decade has stayed near three thousand for
+        sixty years. The change is in size: a large fire in 2016–2025 averaged
+        10,397 hectares, 1.9 times the average of 1960–1980. Growth, not
+        ignition, is what drives the record years.
+      </p>
+
+      <figure class="viz" id="fig-size">
+        <h3>The fires got bigger</h3>
+        <p class="sub">Mean size of a large fire by era, hectares</p>
+        <svg></svg>
+        <p class="src">
+          NFDB point data (≥ 200 ha), CWFIS / Canadian Forest Service
+        </p>
+      </figure>
+
+      <h2>Lightning burns the most land</h2>
+      <p>
+        People start fires close to roads and towns, where suppression reaches
+        them early. Lightning starts them in remote forest, where it can take
+        days for crews to arrive, if they arrive at all. 16,318 of the 20,946
+        large fires were natural ignitions, and they account for 86% of the
+        total area burned.
+      </p>
+
+      <figure class="viz" id="fig-cause">
+        <h3>Who starts them</h3>
+        <p class="sub">Share of area burned by cause, per year</p>
+        <div class="legend-row">
+          <span class="k"
+            ><span class="sw" style="background: var(--lightning)"></span
+            >Lightning</span
+          >
+          <span class="k"
+            ><span class="sw" style="background: var(--human)"></span
+            >Human</span
+          >
+          <span class="k"
+            ><span class="sw" style="background: var(--unknown)"></span
+            >Unknown</span
+          >
+        </div>
+        <svg></svg>
+        <p class="src">
+          NFDB point data (≥ 200 ha), CWFIS / Canadian Forest Service
+        </p>
+      </figure>
+
+      <h2>The Geographic Distribution</h2>
+      <p>
+        Most of the burning happens in a belt across the western boreal forest:
+        the Northwest Territories and the northern parts of Alberta,
+        Saskatchewan and Manitoba, with a second concentration in Quebec. The
+        map layers above show this in different ways: density is total burned
+        area over the full record, hotspots marks the statistically significant
+        clusters, trend shows where annual burned area is rising, and reburns
+        shows land that has burned more than once since 1972.
+      </p>
+
+      <figure class="viz" id="fig-prov">
+        <h3>Jurisdictional Profiles</h3>
+        <p class="sub">Area burned per year by reporting agency, Mha</p>
+        <svg></svg>
+        <p class="src">
+          NFDB point data (≥ 200 ha), CWFIS / Canadian Forest Service <br />
+          The map pans by dragging; hold Ctrl and scroll, or pinch, to zoom.
+        </p>
+      </figure>
+
+      <h2>The largest fires on record</h2>
+      <p>
+        Burning is concentrated in a small number of very large fires. The 243
+        fires that passed 100,000 hectares are about one percent of the record
+        and roughly a third of the area burned. Hover a row to see the fire's
+        burn scar on the map above.
+      </p>
+
+      <figure class="viz" id="fig-top">
+        <h3>The giants</h3>
+        <p class="sub">
+          Twenty largest fires in the NFDB record. Hover to fly to the scar.
+        </p>
+        <div id="top-table"></div>
+        <p class="src">
+          NFDB point data; scar outlines from NBAC 1972–2025 where available
+        </p>
+      </figure>
+
+      <h2>2023, day by day</h2>
+      <p>
+        The 2023 button above the map replays the season from satellite data:
+        1.6 million VIIRS thermal detections over the year. Quebec's fires start
+        with a burst of lightning in early June; the west and the territories
+        burn from May into October.
+      </p>
+
+      <h2>Method</h2>
+      <p class="method">
+        Timeline and figures: NFDB large-fire points (≥ 200 ha), 1959–2025,
+        cleaned of invalid years and prescribed burns. Annual area burned is
+        cross-checked against NBAC adjusted hectares (1972–2025); the two differ
+        by source and method (for 2023, 17.6 Mha NFDB vs 14.8 Mha NBAC).
+      </p>
+      <p class="method">
+        Density: fires are binned to a 5 km grid weighted by burned area, and
+        the grid \(A\) is convolved with a Gaussian kernel of σ = 25 km. Values
+        are log-scaled, with cells under 50 ha left blank, and drawn as six
+        classed contour bands:
+      </p>
+      <div class="eq">
+        $$ D = A * G_{\sigma}, \qquad v =
+        \left(\frac{\ln(1+D)-\ln(1+50)}{\ln(1+D_{\max})-\ln(1+50)}\right)^{\!1.6}
+        $$
+      </div>
+      <p class="method">
+        Hotspots: Getis–Ord \(G_i^{*}\) on total burned area per 25 km cell,
+        with binary KNN-8 weights and analytic inference, shown from z ≥ 1.65:
+      </p>
+      <div class="eq">
+        $$ G_i^{*} = \frac{\sum_j w_{ij}x_j - \bar{x}\sum_j w_{ij}}
+        {S\sqrt{\bigl[\,n\sum_j w_{ij}^{2} - \bigl(\sum_j
+        w_{ij}\bigr)^{2}\bigr]/(n-1)}} $$
+      </div>
+      <p class="method">
+        Trend: the Theil–Sen slope of decadal mean burned area \(d\) per 50 km
+        cell, masked where the Mann–Kendall statistic \(S\) on the annual series
+        gives p &gt; 0.1:
+      </p>
+      <div class="eq">
+        $$ \beta = \operatorname*{median}_{i&lt;j}\,\frac{d_j - d_i}{t_j - t_i},
+        \qquad S = \sum_{i&lt;j}\operatorname{sgn}(x_j - x_i) $$
+      </div>
+      <p class="method">
+        Reburns: NBAC fire polygons rasterized at 2 km and summed, so each cell
+        counts how many times it has burned since 1972. Severity: CanLaBS
+        Landsat burn severity (1985–2024), the normalized burn ratio differenced
+        across each fire and classed at 270 and 660:
+      </p>
+      <div class="eq">
+        $$ \mathrm{NBR} =
+        \frac{\rho_{\text{NIR}}-\rho_{\text{SWIR2}}}{\rho_{\text{NIR}}+\rho_{\text{SWIR2}}},
+        \qquad \mathrm{dNBR} = 1000\,(\mathrm{NBR}_{\text{pre}} -
+        \mathrm{NBR}_{\text{post}}) $$
+      </div>
+      <p class="method">
+        2023 playback: FIRMS VIIRS SNPP C2 detections, vegetation fires at
+        nominal-or-better confidence, counted per day on a 6 km grid; a cell
+        with \(n\) detections draws with magnitude \(\min\bigl(1,
+        \tfrac{1}{2.5}\log_{10}(1+n)\bigr)\).
+      </p>
+    </article>
+
+    <footer>
+      Data: Canadian National Fire Database (NFDB) point data &amp; National
+      Burned Area Composite (NBAC), CWFIS / Canadian Forest Service, Natural
+      Resources Canada · CanLaBS Landsat burn severity · FIRMS VIIRS active fire
+      data, NASA LANCE/FIRMS · basemap Natural Earth.<br />
+      By Sandesh Bhandari, @snes19xx, 2026
+    </footer>
+
+    <div class="tooltip" id="tooltip"></div>
+
+    <script type="module" src="js/main.js"></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.16/dist/contrib/auto-render.min.js"
+      onload="
+        renderMathInElement(document.querySelector('article'), {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '\\(', right: '\\)', display: false },
+          ],
+        })
+      "
+    ></script>
+  </body>
 </html>
