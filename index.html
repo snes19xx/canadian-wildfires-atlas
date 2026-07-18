@@ -96,68 +96,50 @@
           </div>
         </div>
 
-        <div class="controls-right">
+        <div class="railwrap">
           <div
-            class="chips layerpick"
+            class="span-switch"
+            id="span-pick"
+            role="radiogroup"
+            aria-label="Time span"
+          >
+            <button id="span-years" role="radio" aria-checked="true">
+              1959–2025
+            </button>
+            <button id="mode-2023" role="radio" aria-checked="false">
+              2023 daily
+            </button>
+          </div>
+          <div
+            class="rail"
             id="layer-pick"
             role="radiogroup"
             aria-label="Map layer"
           >
-            <button
-              class="chip active"
-              data-layer="embers"
-              role="radio"
-              aria-checked="true"
-            >
-              Embers
+            <button data-layer="fires" role="radio" aria-checked="true">
+              Fires
             </button>
-            <button
-              class="chip"
-              data-layer="density"
-              role="radio"
-              aria-checked="false"
-            >
+            <button data-layer="density" role="radio" aria-checked="false">
               Density
             </button>
-            <button
-              class="chip"
-              data-layer="hotspots"
-              role="radio"
-              aria-checked="false"
-            >
+            <button data-layer="hotspots" role="radio" aria-checked="false">
               Hotspots
             </button>
-            <button
-              class="chip"
-              data-layer="trend"
-              role="radio"
-              aria-checked="false"
-            >
-              Trend
-            </button>
-            <button
-              class="chip"
-              data-layer="reburns"
-              role="radio"
-              aria-checked="false"
-            >
+            <button data-layer="reburns" role="radio" aria-checked="false">
               Reburns
             </button>
-            <button
-              class="chip"
-              data-layer="severity"
-              role="radio"
-              aria-checked="false"
-            >
+            <button data-layer="severity" role="radio" aria-checked="false">
               Severity
             </button>
+            <button data-layer="trend" role="radio" aria-checked="false">
+              Trend
+            </button>
           </div>
-          <div class="chips" id="mode-chips">
-            <button class="chip" id="mode-2023">2023 day by day</button>
-          </div>
+          <div class="legend-box" id="legend-box"></div>
+          <div class="span-note" id="span-note"></div>
         </div>
 
-        <div class="legend-box" id="legend-box"></div>
+        <div class="scrub-rule" id="scrub-rule" hidden></div>
 
         <div class="timeline">
           <button class="playbtn" id="play" aria-label="Play">▶</button>
