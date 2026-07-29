@@ -325,6 +325,29 @@ body {
 .playbtn:hover {
   border-color: var(--faint);
 }
+/* On load, six one-second ember pulses to point at the scrubber. */
+.playbtn.attract {
+  animation: play-attract 1s ease-out 6;
+}
+@keyframes play-attract {
+  from {
+    border-color: var(--ember-2);
+    box-shadow:
+      0 0 0 0 color-mix(in srgb, var(--ember-3) 55%, transparent),
+      0 0 14px 2px color-mix(in srgb, var(--ember-1) 45%, transparent);
+  }
+  to {
+    border-color: var(--rule);
+    box-shadow:
+      0 0 0 12px transparent,
+      0 0 14px 2px transparent;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .playbtn.attract {
+    animation: none;
+  }
+}
 .track {
   position: relative;
   flex: 1;

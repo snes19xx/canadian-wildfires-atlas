@@ -118,6 +118,8 @@ async function boot() {
   };
 
   playBtn.addEventListener("click", () => {
+    // The flash has done its job once the button is pressed.
+    playBtn.classList.remove("attract");
     if (!state.playing) {
       if (state.mode === "years" && state.t >= Y1 + 0.9) state.t = Y0;
       if (state.mode === "2023" && state.day >= 364) state.day = 1;
