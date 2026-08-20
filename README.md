@@ -1,5 +1,9 @@
 # Atlas of Canadian Wildfires
 
+<p align="center">
+  <img src="screenshot.jpg" alt="Screenshot" width=100%>
+</p>
+
 An interactive atlas built from the Canadian National Fire Database: 20,946 fires of 200 hectares
 or more, 1959–2025, about 160 million hectares burned.
 
