@@ -1,8 +1,10 @@
 import * as d3 from "d3";
-import { colors, cssv } from "./theme.js";
+import { colors as paletteOf, cssv as varOf } from "./theme.js";
 
-const MONO = "IBM Plex Mono, monospace";
-const SANS = "IBM Plex Sans, sans-serif";
+const SF = '"CMU Sans Serif", Helvetica, sans-serif';
+const page = () => document.querySelector("article");
+const cssv = (name) => varOf(name, page());
+const colors = () => paletteOf(page());
 const fmt = d3.format(",");
 
 const tip = () => document.getElementById("tooltip");
@@ -55,17 +57,17 @@ export function drawTrackSpark(svgEl, values, highlight) {
     .attr("stroke-width", 1);
 }
 
-function axisText(sel, size = 11) {
+function axisText(sel, size = 11.5) {
   return sel
-    .attr("font-family", MONO)
+    .attr("font-family", SF)
     .attr("font-size", size)
     .attr("fill", cssv("--muted"));
 }
 
-// Panel-colored casing so annotations stay legible over bars.
+// Page-colored casing so annotations stay legible over bars.
 function halo(sel) {
   return sel
-    .attr("stroke", cssv("--panel"))
+    .attr("stroke", cssv("--paper"))
     .attr("stroke-width", 3.5)
     .attr("stroke-linejoin", "round")
     .attr("paint-order", "stroke");
@@ -129,10 +131,8 @@ function figAnnual(annual, onYearClick) {
         bx = x(d),
         bw = x.bandwidth();
       const by = y(v),
-        bh = Math.max(0.5, H - m.b - by),
-        rr = Math.min(2.5, bw / 2, bh);
-      return `M${bx},${by + rr} a${rr},${rr} 0 0 1 ${rr},-${rr} h${bw - 2 * rr}
-              a${rr},${rr} 0 0 1 ${rr},${rr} v${bh - rr} h${-bw} Z`;
+        bh = Math.max(0.5, H - m.b - by);
+      return `M${bx},${by} h${bw} v${bh} h${-bw} Z`;
     })
     .attr("fill", cssv("--ember-2"))
     .style("cursor", "pointer");
@@ -147,9 +147,9 @@ function figAnnual(annual, onYearClick) {
     .attr("stroke", cssv("--muted"))
     .attr("stroke-dasharray", "3 4");
   const labelText = `median ${median.toFixed(1)}`;
-  const labelEnd = m.l + 6 + labelText.length * 6.3;
+  const labelEnd = m.l + 6 + labelText.length * 6.1;
   const under = mha.filter((_, i) => x(years[i]) < labelEnd);
-  halo(axisText(svg.append("text"), 10.5))
+  halo(axisText(svg.append("text"), 11))
     .attr("x", m.l + 6)
     .attr("y", Math.min(y(median), y(d3.max(under))) - 5)
     .text(labelText);
@@ -160,8 +160,8 @@ function figAnnual(annual, onYearClick) {
       .attr("x", x(yr) + (yr === 2025 ? x.bandwidth() : x.bandwidth() / 2))
       .attr("y", y(v) - 7)
       .attr("text-anchor", yr === 2025 ? "end" : "middle")
-      .attr("font-family", MONO)
-      .attr("font-size", 11.5)
+      .attr("font-family", SF)
+      .attr("font-size", 12)
       .attr("fill", cssv("--ink"))
       .text(`${yr}, ${v.toFixed(1)}`);
   }
@@ -229,10 +229,8 @@ function figSize(annual) {
       const bx = x(k),
         bw = x.bandwidth(),
         by = y(v),
-        bh = H - m.b - by,
-        rr = 3;
-      return `M${bx},${by + rr} a${rr},${rr} 0 0 1 ${rr},-${rr} h${bw - 2 * rr}
-              a${rr},${rr} 0 0 1 ${rr},${rr} v${bh - rr} h${-bw} Z`;
+        bh = H - m.b - by;
+      return `M${bx},${by} h${bw} v${bh} h${-bw} Z`;
     })
     .attr("fill", cssv("--ember-2"));
 
@@ -244,7 +242,7 @@ function figSize(annual) {
     .attr("x", ([k]) => x(k) + x.bandwidth() / 2)
     .attr("y", ([, v]) => y(v) - 8)
     .attr("text-anchor", "middle")
-    .attr("font-family", MONO)
+    .attr("font-family", SF)
     .attr("font-size", 13)
     .attr("fill", cssv("--ink"))
     .text(([, v]) => `${fmt(v)} ha`);
@@ -288,7 +286,7 @@ function figCause(annual, onYearClick) {
     .join("path")
     .attr("d", area)
     .attr("fill", (d) => color[d.key])
-    .attr("stroke", cssv("--panel"))
+    .attr("stroke", cssv("--paper"))
     .attr("stroke-width", 2);
 
   axisText(
@@ -410,16 +408,16 @@ function figProvinces(annual) {
       .attr("text-anchor", "middle");
     lbl
       .append("tspan")
-      .attr("font-family", MONO)
-      .attr("font-size", 11)
-      .attr("font-weight", 500)
+      .attr("font-family", SF)
+      .attr("font-size", 11.5)
+      .attr("font-weight", 700)
       .attr("fill", cssv("--ink"))
       .text(ag);
     lbl
       .append("tspan")
       .attr("dx", 6)
-      .attr("font-family", SANS)
-      .attr("font-size", 10.5)
+      .attr("font-family", SF)
+      .attr("font-size", 11)
       .attr("fill", cssv("--faint"))
       .text(NAMES[ag] ?? "");
     const cross = g

@@ -4,49 +4,55 @@ export function themeName() {
   return document.documentElement.dataset.theme === "dark" ? "dark" : "light";
 }
 
-export function cssv(name) {
-  return getComputedStyle(document.documentElement)
+export function mapScope() {
+  return document.getElementById("scene-canvas") ?? document.documentElement;
+}
+
+export function cssv(name, scope) {
+  return getComputedStyle(scope ?? mapScope())
     .getPropertyValue(name)
     .trim();
 }
 
-export function colors() {
+export function colors(scope) {
+  const el = scope ?? mapScope();
   return {
-    paper: cssv("--paper"),
-    panel: cssv("--panel"),
-    panel2: cssv("--panel-2"),
-    ink: cssv("--ink"),
-    muted: cssv("--muted"),
-    faint: cssv("--faint"),
-    rule: cssv("--rule"),
-    land: cssv("--land"),
+    paper: cssv("--paper", el),
+    panel: cssv("--panel", el),
+    panel2: cssv("--panel-2", el),
+    ink: cssv("--ink", el),
+    muted: cssv("--muted", el),
+    faint: cssv("--faint", el),
+    rule: cssv("--rule", el),
+    land: cssv("--land", el),
     ember: [
-      cssv("--ember-1"),
-      cssv("--ember-2"),
-      cssv("--ember-3"),
-      cssv("--ember-4"),
-      cssv("--ember-5"),
+      cssv("--ember-1", el),
+      cssv("--ember-2", el),
+      cssv("--ember-3", el),
+      cssv("--ember-4", el),
+      cssv("--ember-5", el),
     ],
-    lightning: cssv("--lightning"),
-    human: cssv("--human"),
-    unknown: cssv("--unknown"),
-    trendNeg: cssv("--trend-neg"),
-    trendMid: cssv("--trend-mid"),
-    trendPos: cssv("--trend-pos"),
+    lightning: cssv("--lightning", el),
+    human: cssv("--human", el),
+    unknown: cssv("--unknown", el),
+    trendNeg: cssv("--trend-neg", el),
+    trendMid: cssv("--trend-mid", el),
+    trendPos: cssv("--trend-pos", el),
   };
 }
 
 // Ramps index small--->big fire.
-export function emberRamp() {
-  const e = colors().ember;
+export function emberRamp(scope) {
+  const e = colors(scope).ember;
   return themeName() === "dark"
     ? [e[4], e[3], e[2], e[1], e[0]]
     : [e[0], e[1], e[2], e[3], e[4]];
 }
 
 // Burn severity classes, low -> high.
-export function severityRamp() {
-  return [cssv("--sev-1"), cssv("--sev-2"), cssv("--sev-3")];
+export function severityRamp(scope) {
+  const el = scope ?? mapScope();
+  return [cssv("--sev-1", el), cssv("--sev-2", el), cssv("--sev-3", el)];
 }
 
 export function onThemeChange(fn) {

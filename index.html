@@ -11,11 +11,12 @@
 
     <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="assets/fonts/cmu-serif-500-roman.woff2"
+      crossorigin
     />
     <link rel="stylesheet" href="styles/main.css" />
     <link
@@ -60,7 +61,7 @@
             >
               <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
             </svg>
-            Dark
+            Light
           </button>
           <a
             class="tool-btn"
@@ -176,15 +177,15 @@
       </p>
 
       <figure class="viz" id="fig-annual">
-        <h3>Sixty-six years, one bar each</h3>
-        <p class="sub">
-          Area burned by large fires (≥ 200 ha), millions of hectares per year.
-          Click a bar to scrub the map.
-        </p>
         <svg></svg>
-        <p class="src">
-          NFDB point data (≥ 200 ha), CWFIS / Canadian Forest Service
-        </p>
+        <figcaption>
+          <span class="lead">Sixty-six years, one bar each.</span> Area burned
+          by large fires (≥ 200 ha), millions of hectares per year. Click a bar
+          to scrub the map.
+          <span class="src"
+            >NFDB point data (≥ 200 ha), CWFIS / Canadian Forest Service</span
+          >
+        </figcaption>
         <details class="data-table">
           <summary>Data table: fires and area burned by year</summary>
           <div id="annual-table"></div>
@@ -200,12 +201,14 @@
       </p>
 
       <figure class="viz" id="fig-size">
-        <h3>The fires got bigger</h3>
-        <p class="sub">Mean size of a large fire by era, hectares</p>
         <svg></svg>
-        <p class="src">
-          NFDB point data (≥ 200 ha), CWFIS / Canadian Forest Service
-        </p>
+        <figcaption>
+          <span class="lead">The fires got bigger.</span> Mean size of a large
+          fire by era, hectares.
+          <span class="src"
+            >NFDB point data (≥ 200 ha), CWFIS / Canadian Forest Service</span
+          >
+        </figcaption>
       </figure>
 
       <h2>Lightning burns the most land</h2>
@@ -218,8 +221,6 @@
       </p>
 
       <figure class="viz" id="fig-cause">
-        <h3>Who starts them</h3>
-        <p class="sub">Share of area burned by cause, per year</p>
         <div class="legend-row">
           <span class="k"
             ><span class="sw" style="background: var(--lightning)"></span
@@ -235,12 +236,16 @@
           >
         </div>
         <svg></svg>
-        <p class="src">
-          NFDB point data (≥ 200 ha), CWFIS / Canadian Forest Service
-        </p>
+        <figcaption>
+          <span class="lead">Who starts them.</span> Share of area burned by
+          cause, per year.
+          <span class="src"
+            >NFDB point data (≥ 200 ha), CWFIS / Canadian Forest Service</span
+          >
+        </figcaption>
       </figure>
 
-      <h2>The Geographic Distribution</h2>
+      <h2>The geographic distribution</h2>
       <p>
         Most of the burning happens in a belt across the western boreal forest:
         the Northwest Territories and the northern parts of Alberta,
@@ -252,13 +257,15 @@
       </p>
 
       <figure class="viz" id="fig-prov">
-        <h3>Jurisdictional Profiles</h3>
-        <p class="sub">Area burned per year by reporting agency, Mha</p>
         <svg></svg>
-        <p class="src">
-          NFDB point data (≥ 200 ha), CWFIS / Canadian Forest Service <br />
-          The map pans by dragging; hold Ctrl and scroll, or pinch, to zoom.
-        </p>
+        <figcaption>
+          <span class="lead">Jurisdictional profiles.</span> Area burned per
+          year by reporting agency, Mha.
+          <span class="src"
+            >NFDB point data (≥ 200 ha), CWFIS / Canadian Forest Service. The
+            map pans by dragging; hold Ctrl and scroll, or pinch, to zoom.</span
+          >
+        </figcaption>
       </figure>
 
       <h2>The largest fires on record</h2>
@@ -270,14 +277,15 @@
       </p>
 
       <figure class="viz" id="fig-top">
-        <h3>The giants</h3>
-        <p class="sub">
-          Twenty largest fires in the NFDB record. Hover to fly to the scar.
-        </p>
         <div id="top-table"></div>
-        <p class="src">
-          NFDB point data; scar outlines from NBAC 1972–2025 where available
-        </p>
+        <figcaption>
+          <span class="lead">The giants.</span> Twenty largest fires in the NFDB
+          record. Hover to fly to the scar.
+          <span class="src"
+            >NFDB point data; scar outlines from NBAC 1972–2025 where
+            available</span
+          >
+        </figcaption>
       </figure>
 
       <h2>2023, day by day</h2>
@@ -290,45 +298,54 @@
 
       <h2>Method</h2>
       <p class="method">
-        Timeline and figures: NFDB large-fire points (≥ 200 ha), 1959–2025,
-        cleaned of invalid years and prescribed burns. Annual area burned is
-        cross-checked against NBAC adjusted hectares (1972–2025); the two differ
-        by source and method (for 2023, 17.6 Mha NFDB vs 14.8 Mha NBAC).
+        <span class="lead">Sources.</span> The timeline and every figure come
+        from the National Fire Database's large-fire points: one row per fire
+        that reached 200 hectares, 1959 to 2025, with invalid years and
+        prescribed burns dropped. Annual totals are cross-checked against the
+        National Burned Area Composite, which maps fire perimeters from
+        satellite imagery back to 1972.
       </p>
       <p class="method">
-        Density: fires are binned to a 5 km grid weighted by burned area, and
-        the grid \(A\) is convolved with a Gaussian kernel of σ = 25 km. Values
-        are log-scaled, with cells under 50 ha left blank, and drawn as six
-        classed contour bands:
+        <span class="lead">Density.</span> Each fire is placed on a 5 km grid
+        and weighted by the area it burned, and that grid \(A\) is then blurred
+        with a Gaussian kernel of σ = 25 km, \(D = A * G_{\sigma}\), so a
+        cluster of fires reads as one field. Because a few cells hold orders of
+        magnitude more burned area than the rest, \(D\) is put on a log scale
+        before it is cut into the six bands on the map; cells under 50 ha stay
+        blank.
+      </p>
+      <p class="method">
+        <span class="lead">Hotspots.</span> Canada is divided into 25 km cells
+        and the burned area in each is added up. A cell is drawn when it and its
+        eight neighbours together have burned far more than the national average
+        — far enough that chance is an unlikely explanation (Getis–Ord
+        \(G_i^{*}\), \(z \ge 1.65\)).
+      </p>
+      <p class="method">
+        <span class="lead">Trend.</span> For every 50 km cell, decadal mean
+        burned area \(d\) is fitted against time \(t\) by the Theil–Sen
+        estimator: take the slope between each pair of points and keep the
+        median of them all.
       </p>
       <div class="eq">
-        $$ D = A * G_{\sigma}, \qquad v =
-        \left(\frac{\ln(1+D)-\ln(1+50)}{\ln(1+D_{\max})-\ln(1+50)}\right)^{\!1.6}
+        $$ \beta = \operatorname*{median}_{i&lt;j}\,\frac{d_j - d_i}{t_j - t_i}
         $$
       </div>
       <p class="method">
-        Hotspots: Getis–Ord \(G_i^{*}\) on total burned area per 25 km cell,
-        with binary KNN-8 weights and analytic inference, shown from z ≥ 1.65:
+        One freak year cannot tilt that line the way it would tilt a
+        least-squares fit. A cell is shown only where the Mann–Kendall test
+        rates the direction consistent, p ≤ 0.1.
       </p>
-      <div class="eq">
-        $$ G_i^{*} = \frac{\sum_j w_{ij}x_j - \bar{x}\sum_j w_{ij}}
-        {S\sqrt{\bigl[\,n\sum_j w_{ij}^{2} - \bigl(\sum_j
-        w_{ij}\bigr)^{2}\bigr]/(n-1)}} $$
-      </div>
       <p class="method">
-        Trend: the Theil–Sen slope of decadal mean burned area \(d\) per 50 km
-        cell, masked where the Mann–Kendall statistic \(S\) on the annual series
-        gives p &gt; 0.1:
+        <span class="lead">Reburns.</span> NBAC fire perimeters are rasterized
+        at 2 km and stacked, so each cell simply counts how many times it has
+        burned since 1972.
       </p>
-      <div class="eq">
-        $$ \beta = \operatorname*{median}_{i&lt;j}\,\frac{d_j - d_i}{t_j - t_i},
-        \qquad S = \sum_{i&lt;j}\operatorname{sgn}(x_j - x_i) $$
-      </div>
       <p class="method">
-        Reburns: NBAC fire polygons rasterized at 2 km and summed, so each cell
-        counts how many times it has burned since 1972. Severity: CanLaBS
-        Landsat burn severity (1985–2024), the normalized burn ratio differenced
-        across each fire and classed at 270 and 660:
+        <span class="lead">Severity.</span> A fresh burn darkens in
+        near-infrared and brightens in shortwave infrared. CanLaBS (1985–2024)
+        measures that contrast (the normalized burn ratio) on a Landsat image
+        from before each fire and one from after, and subtracts the two.
       </p>
       <div class="eq">
         $$ \mathrm{NBR} =
@@ -337,10 +354,15 @@
         \mathrm{NBR}_{\text{post}}) $$
       </div>
       <p class="method">
-        2023 playback: FIRMS VIIRS SNPP C2 detections, vegetation fires at
-        nominal-or-better confidence, counted per day on a 6 km grid; a cell
-        with \(n\) detections draws with magnitude \(\min\bigl(1,
-        \tfrac{1}{2.5}\log_{10}(1+n)\bigr)\).
+        The larger the drop, the more vegetation and surface organic matter the
+        fire consumed. The map breaks dNBR at 270 and 660.
+      </p>
+      <p class="method">
+        <span class="lead">2023 playback.</span> FIRMS VIIRS detections are
+        pixels the satellite saw burning as it passed overhead, filtered here to
+        vegetation fires at nominal-or-better confidence and counted per day on
+        a 6 km grid. A cell is drawn from the logarithm of its daily count, so a
+        single detection still registers and the scale tops out near 300.
       </p>
     </article>
 

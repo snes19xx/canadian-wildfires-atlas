@@ -1,5 +1,41 @@
+@font-face {
+  font-family: "CMU Serif";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../assets/fonts/cmu-serif-500-roman.woff2") format("woff2");
+}
+@font-face {
+  font-family: "CMU Serif";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../assets/fonts/cmu-serif-500-italic.woff2") format("woff2");
+}
+@font-face {
+  font-family: "CMU Serif";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../assets/fonts/cmu-serif-700-roman.woff2") format("woff2");
+}
+@font-face {
+  font-family: "CMU Sans Serif";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../assets/fonts/cmu-sans-serif-500-roman.woff2") format("woff2");
+}
+@font-face {
+  font-family: "CMU Sans Serif";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../assets/fonts/cmu-sans-serif-700-roman.woff2") format("woff2");
+}
+
 /* Palettes */
-/* Light is the default theme. */
+/* The page is always light; the dark theme applies to the map only. */
 :root {
   --paper: #faf8f3;
   --panel: #f3efe6e4;
@@ -23,18 +59,17 @@
   --sev-2: #e65100;
   --sev-3: #880e4f;
   --land: #ece6d8;
-  --serif: "Newsreader", "Source Serif 4", serif;
-  --sans: "IBM Plex Sans", system-ui, sans-serif;
-  --mono: "IBM Plex Mono", monospace;
+  --rm: "CMU Serif", "Latin Modern Roman", "Nimbus Roman", Georgia, serif;
+  --sf: "CMU Sans Serif", "Latin Modern Sans", Helvetica, Arial, sans-serif;
 }
-[data-theme="dark"] {
-  --paper: #131110;
-  --panel: #1b1815;
-  --panel-2: #242019;
+[data-theme="dark"] #scene-canvas {
+  --paper: #3a3632;
+  --panel: #322b25;
+  --panel-2: #3a322a;
   --ink: #e9e2d4;
   --muted: #9a9284;
-  --faint: #5c564c;
-  --rule: #2a2622;
+  --faint: #6e6658;
+  --rule: #453d34;
   --ember-1: #ffbb5c;
   --ember-2: #f2953a;
   --ember-3: #dd6f1e;
@@ -46,7 +81,7 @@
   --sev-1: #fff176;
   --sev-2: #ff9100;
   --sev-3: #ff1744;
-  --land: #1a1714;
+  --land: #322b24;
 }
 * {
   box-sizing: border-box;
@@ -56,6 +91,14 @@ body {
   margin: 0;
   background: var(--paper);
   color: var(--ink);
+  font-family: var(--rm);
+  font-kerning: normal;
+  font-variant-ligatures: common-ligatures;
+  text-rendering: optimizeLegibility;
+}
+b,
+strong {
+  font-weight: 700;
 }
 
 .masthead {
@@ -64,24 +107,22 @@ body {
   justify-content: space-between;
   gap: 12px 24px;
   flex-wrap: wrap;
-  padding: 22px 40px 16px;
+  padding: 24px 40px 18px;
   border-bottom: 1px solid var(--rule);
 }
 .masthead h1 {
-  font-family: var(--serif);
-  font-weight: 500;
-  font-size: 2.2rem;
-  line-height: 1.05;
-  letter-spacing: -0.01em;
-  margin: 0 0 0.25rem;
+  font-weight: 400;
+  font-size: 39px;
+  line-height: 1.15;
+  margin: 0 0 6px;
 }
 .dek {
-  font-family: var(--serif);
+  font-family: var(--sf);
   color: var(--muted);
-  font-size: 1.1rem;
+  font-size: 14.5px;
   line-height: 1.45;
   margin: 0;
-  max-width: 62ch;
+  max-width: 74ch;
 }
 .mast-tools {
   display: flex;
@@ -92,13 +133,12 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-family: var(--sans);
-  font-size: 12.5px;
+  font-family: var(--sf);
+  font-size: 14px;
   color: var(--ink);
   border: 1px solid var(--rule);
-  border-radius: 3px;
   background: var(--panel);
-  padding: 7px 12px;
+  padding: 4px 10px;
   cursor: pointer;
   text-decoration: none;
   white-space: nowrap;
@@ -121,6 +161,8 @@ body {
   position: relative;
   flex: 1;
   min-height: 480px;
+  background: var(--paper);
+  color: var(--ink);
 }
 #scene-canvas,
 #scene-canvas canvas {
@@ -143,55 +185,48 @@ body {
   top: 18px;
   left: 40px;
   pointer-events: none;
-  font-family: var(--mono);
   z-index: 2;
 }
 .hud .year {
-  font-size: 64px;
-  font-weight: 500;
+  font-size: 66px;
+  font-weight: 400;
   line-height: 1;
   color: var(--ink);
 }
 .hud .stat {
-  font-family: var(--sans);
-  font-size: 13px;
+  font-family: var(--sf);
+  font-size: 13.5px;
   color: var(--muted);
-  margin-top: 7px;
+  margin-top: 4px;
 }
 .hud .stat b {
-  font-family: var(--mono);
+  font-weight: 400;
   color: var(--ink);
-  font-weight: 500;
 }
 
 .railwrap {
   position: absolute;
-  top: 150px;
+  top: 152px;
   left: 40px;
   z-index: 2;
   width: 208px;
-  font-family: var(--sans);
 }
 .span-switch {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 .span-switch button {
-  padding: 8px 6px;
+  padding: 5px 6px;
   line-height: 1.35;
   border: 1px solid var(--rule);
   background: var(--panel);
-  font-family: var(--mono);
-  font-size: 11.5px;
+  font-family: var(--sf);
+  font-size: 13.5px;
   color: var(--muted);
   cursor: pointer;
 }
-.span-switch button:first-child {
-  border-radius: 3px 0 0 3px;
-}
 .span-switch button:last-child {
-  border-radius: 0 3px 3px 0;
   margin-left: -1px;
 }
 .span-switch button:hover {
@@ -215,12 +250,12 @@ body {
   gap: 10px;
   width: 100%;
   text-align: left;
-  padding: 8px;
+  padding: 5px 8px;
   background: none;
   border: 0;
   border-bottom: 1px solid var(--rule);
-  font-family: var(--sans);
-  font-size: 14px;
+  font-family: var(--sf);
+  font-size: 14.5px;
   color: var(--muted);
   cursor: pointer;
 }
@@ -243,13 +278,13 @@ body {
   flex: none;
   width: 22px;
   height: 10px;
-  border-radius: 1px;
 }
 
 .span-note {
-  font-family: var(--serif);
-  font-size: 12.5px;
-  line-height: 1.4;
+  font-family: var(--sf);
+  font-size: 13px;
+  font-style: normal;
+  line-height: 1.35;
   color: var(--muted);
   padding: 10px 8px 0;
 }
@@ -258,14 +293,15 @@ body {
 }
 
 .legend-box {
-  font-family: var(--sans);
-  font-size: 12px;
+  font-family: var(--sf);
+  font-size: 13px;
   color: var(--muted);
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 4px 8px;
   padding: 9px 8px 0;
+  line-height: 1.35;
 }
 .legend-box .k {
   display: inline-flex;
@@ -280,7 +316,6 @@ body {
   width: 14px;
   height: 9px;
   display: inline-block;
-  border-radius: 2px;
 }
 
 /* For the scrubber on layers that have nothing to scrub. */
@@ -311,21 +346,21 @@ body {
 }
 .playbtn {
   flex: none;
-  width: 42px;
-  height: 42px;
-  border-radius: 3px;
+  width: 36px;
+  height: 36px;
   border: 1px solid var(--rule);
   background: var(--panel);
   color: var(--ink);
   cursor: pointer;
-  font-size: 15px;
+  font-size: 13px;
+  line-height: 1;
   display: grid;
   place-items: center;
 }
 .playbtn:hover {
   border-color: var(--faint);
 }
-/* On load, six one-second ember pulses to point at the scrubber. */
+/* On load pulses to point at the scrubber. */
 .playbtn.attract {
   animation: play-attract 1s ease-out 6;
 }
@@ -351,7 +386,7 @@ body {
 .track {
   position: relative;
   flex: 1;
-  height: 42px;
+  height: 36px;
 }
 .track svg {
   position: absolute;
@@ -372,99 +407,120 @@ body {
 }
 .track input::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 3px;
-  height: 42px;
+  width: 2px;
+  height: 36px;
   border-radius: 0;
   background: var(--ink);
   border: none;
 }
 .track input::-moz-range-thumb {
-  width: 3px;
-  height: 42px;
+  width: 2px;
+  height: 36px;
   border-radius: 0;
   background: var(--ink);
   border: none;
 }
 .tick {
-  font-family: var(--mono);
-  font-size: 11px;
+  font-family: var(--sf);
+  font-size: 13px;
   color: var(--faint);
 }
 
 article {
-  max-width: 840px;
+  counter-reset: section figure;
+  max-width: 700px;
   margin: 0 auto;
-  padding: 72px 24px 40px;
-  font-family: var(--serif);
-  font-size: 16.5px;
-  line-height: 1.62;
+  padding: 76px 24px 40px;
+  font-size: 17.5px;
+  line-height: 1.5;
 }
 article h2 {
-  font-family: var(--serif);
-  font-weight: 500;
-  font-size: 1.75rem;
-  line-height: 1.15;
-  margin: 52px 0 14px;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 1.2;
+  margin: 2.6em 0 0.7em;
 }
 article h2:first-child {
   margin-top: 0;
 }
+article h2::before {
+  counter-increment: section;
+  content: counter(section);
+  padding-right: 0.85em;
+}
 article p {
-  font-family: "Source Serif 4", Georgia, serif;
-  margin: 0 0 1.2em;
+  margin: 0 0 0.9em;
   color: var(--ink);
+  text-align: justify;
+  hyphens: auto;
+}
+article p + p {
+  text-indent: 1.5em;
 }
 article p.method {
-  font-size: 14.5px;
+  font-size: 16px;
   color: var(--muted);
-  line-height: 1.7;
+  line-height: 1.55;
+  text-indent: 0;
+}
+article p.method .lead {
+  color: var(--ink);
+  font-weight: 700;
 }
 article .eq {
-  margin: 6px 0 24px;
-  font-size: 14px;
+  margin: 0.6em 0 1.2em;
   color: var(--ink);
   overflow-x: auto;
 }
+.katex {
+  font-size: 1.03em;
+}
 
 figure.viz {
-  width: min(920px, calc(100vw - 48px));
-  margin: 44px 0 44px calc((min(920px, 100vw - 48px) - 100%) / -2);
-  border: 1px solid var(--rule);
-  border-radius: 4px;
-  background: var(--panel);
-  padding: 22px 24px 14px;
-}
-figure.viz h3 {
-  font-family: var(--serif);
-  font-weight: 500;
-  font-size: 1.22rem;
-  margin: 0 0 2px;
-}
-figure.viz .sub {
-  font-family: var(--sans);
-  font-size: 12.5px;
-  color: var(--muted);
-  margin: 0 0 16px;
-}
-figure.viz .src {
-  font-family: var(--sans);
-  font-size: 11px;
-  color: var(--faint);
-  margin: 10px 0 4px;
+  counter-increment: figure;
+  width: min(900px, calc(100vw - 48px));
+  margin: 2.4em 0 2.4em calc((min(900px, 100vw - 48px) - 100%) / -2);
+  padding: 0;
+  border: 0;
+  background: none;
 }
 figure.viz svg {
   display: block;
   width: 100%;
   height: auto;
 }
+figure.viz figcaption {
+  font-family: var(--sf);
+  max-width: 660px;
+  margin: 14px auto 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--muted);
+  text-align: justify;
+  hyphens: auto;
+}
+figure.viz figcaption::before {
+  content: "Figure " counter(figure) ": ";
+  color: var(--ink);
+}
+figure.viz figcaption .lead {
+  color: var(--ink);
+}
+figure.viz figcaption .src {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--faint);
+}
 
 .legend-row {
   display: flex;
-  gap: 16px;
-  font-family: var(--sans);
-  font-size: 12.5px;
+  justify-content: center;
+  gap: 18px;
+  font-family: var(--sf);
+  font-size: 13px;
   color: var(--muted);
-  margin: 0 0 12px;
+  margin: 0 0 10px;
 }
 .legend-row .k {
   display: inline-flex;
@@ -474,39 +530,55 @@ figure.viz svg {
 .legend-row .sw {
   width: 9px;
   height: 9px;
-  border-radius: 2px;
 }
 
 .data-table {
-  margin: 12px 0 6px;
-  font-family: var(--mono);
-  font-size: 12px;
+  font-family: var(--sf);
+  max-width: 660px;
+  margin: 14px auto 0;
+  font-size: 13.5px;
 }
 .data-table summary {
   cursor: pointer;
   color: var(--muted);
   padding: 4px 0;
 }
-.data-table table {
+.data-table table,
+#top-table table {
   border-collapse: collapse;
   width: 100%;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.data-table table {
   margin-top: 10px;
 }
 .data-table th,
-.data-table td {
+.data-table td,
+#top-table th,
+#top-table td {
   text-align: right;
-  padding: 4px 10px;
-  border-bottom: 1px solid var(--rule);
   font-weight: 400;
+  border: 0;
   color: var(--ink);
 }
-.data-table th {
-  font-family: var(--sans);
+.data-table th,
+.data-table td {
+  padding: 2px 12px;
+}
+.data-table thead th,
+#top-table thead th {
   color: var(--muted);
-  font-size: 11.5px;
+  border-top: 1.1px solid var(--ink);
+  border-bottom: 0.6px solid var(--ink);
+}
+.data-table tbody tr:last-child td,
+#top-table tbody tr:last-child td {
+  border-bottom: 1.1px solid var(--ink);
 }
 .data-table th:first-child,
-.data-table td:first-child {
+.data-table td:first-child,
+#top-table th.name,
+#top-table td.name {
   text-align: left;
 }
 .data-table .wrap {
@@ -514,41 +586,24 @@ figure.viz svg {
   overflow-y: auto;
 }
 
-#top-table table {
-  border-collapse: collapse;
-  width: 100%;
-  font-size: 13px;
+#top-table {
+  font-family: var(--sf);
+  max-width: 660px;
+  margin: 0 auto;
+  font-size: 14px;
+}
+#top-table td.name {
+  font-family: var(--rm);
+  font-size: 15.5px;
 }
 #top-table th,
 #top-table td {
-  padding: 7px 12px;
-  border-bottom: 1px solid var(--rule);
-  text-align: right;
-}
-#top-table th {
-  font-family: var(--sans);
-  font-size: 11.5px;
-  color: var(--muted);
-  font-weight: 500;
-}
-#top-table td {
-  font-family: var(--mono);
-  color: var(--ink);
-}
-#top-table td.name {
-  font-family: var(--serif);
-  font-size: 15px;
-  text-align: left;
-}
-#top-table th.name {
-  text-align: left;
+  padding: 3px 12px;
 }
 #top-table tbody tr {
   cursor: pointer;
 }
-#top-table tbody tr:hover {
-  background: var(--panel-2);
-}
+#top-table tbody tr:hover,
 #top-table tbody tr.active {
   background: var(--panel-2);
 }
@@ -560,14 +615,16 @@ figure.viz svg {
   display: none;
   background: var(--panel-2);
   border: 1px solid var(--rule);
-  border-radius: 3px;
-  font-family: var(--sans);
-  font-size: 12.5px;
+  font-family: var(--sf);
+  font-size: 13px;
   color: var(--ink);
-  padding: 8px 11px;
-  line-height: 1.55;
+  padding: 5px 9px;
+  line-height: 1.4;
   white-space: nowrap;
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.tooltip b {
+  font-weight: 400;
 }
 .tooltip .t-muted {
   color: var(--muted);
@@ -579,24 +636,36 @@ figure.viz svg {
   bottom: 22px;
   z-index: 5;
   display: none;
-  font-family: var(--sans);
-  font-size: 12.5px;
+  transition: bottom 0.18s ease;
+  font-family: var(--sf);
+  font-size: 13.5px;
   border: 1px solid var(--rule);
-  border-radius: 3px;
   background: var(--panel);
   color: var(--ink);
-  padding: 8px 13px;
+  padding: 4px 11px;
   cursor: pointer;
+}
+.back-chip:hover {
+  border-color: var(--muted);
+}
+.back-chip.above-timeline {
+  bottom: 74px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .back-chip {
+    transition: none;
+  }
 }
 
 footer {
   border-top: 1px solid var(--rule);
   margin-top: 40px;
-  padding: 26px 40px 46px;
-  font-family: var(--sans);
-  font-size: 12px;
+  padding: 24px 40px 46px;
+  font-family: var(--sf);
+  font-size: 12.5px;
   color: var(--faint);
-  line-height: 1.8;
+  line-height: 1.7;
 }
 
 @media (max-width: 860px) {
@@ -614,8 +683,7 @@ footer {
     width: 168px;
   }
   .rail button {
-    font-size: 13px;
-    padding: 7px 6px;
+    font-size: 13.5px;
   }
   .legend-box,
   .span-note {
@@ -626,6 +694,6 @@ footer {
     right: 20px;
   }
   .hud .year {
-    font-size: 44px;
+    font-size: 46px;
   }
 }
