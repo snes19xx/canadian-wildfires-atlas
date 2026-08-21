@@ -8,51 +8,103 @@ export function mapScope() {
   return document.getElementById("scene-canvas") ?? document.documentElement;
 }
 
+const VARS = [
+  "--paper",
+  "--panel",
+  "--panel-2",
+  "--ink",
+  "--muted",
+  "--faint",
+  "--rule",
+  "--land",
+  "--ember-1",
+  "--ember-2",
+  "--ember-3",
+  "--ember-4",
+  "--ember-5",
+  "--lightning",
+  "--human",
+  "--unknown",
+  "--trend-neg",
+  "--trend-mid",
+  "--trend-pos",
+  "--sev-1",
+  "--sev-2",
+  "--sev-3",
+];
+
+let cache = new WeakMap();
+
+function read(el) {
+  let entry = cache.get(el);
+  if (!entry) {
+    const cs = getComputedStyle(el);
+    const vars = {};
+    for (const name of VARS) vars[name] = cs.getPropertyValue(name).trim();
+    entry = { vars, colors: null, ember: null, severity: null };
+    cache.set(el, entry);
+  }
+  return entry;
+}
+
 export function cssv(name, scope) {
-  return getComputedStyle(scope ?? mapScope())
-    .getPropertyValue(name)
-    .trim();
+  const el = scope ?? mapScope();
+  const v = read(el).vars[name];
+  return v ?? getComputedStyle(el).getPropertyValue(name).trim();
 }
 
 export function colors(scope) {
-  const el = scope ?? mapScope();
-  return {
-    paper: cssv("--paper", el),
-    panel: cssv("--panel", el),
-    panel2: cssv("--panel-2", el),
-    ink: cssv("--ink", el),
-    muted: cssv("--muted", el),
-    faint: cssv("--faint", el),
-    rule: cssv("--rule", el),
-    land: cssv("--land", el),
-    ember: [
-      cssv("--ember-1", el),
-      cssv("--ember-2", el),
-      cssv("--ember-3", el),
-      cssv("--ember-4", el),
-      cssv("--ember-5", el),
-    ],
-    lightning: cssv("--lightning", el),
-    human: cssv("--human", el),
-    unknown: cssv("--unknown", el),
-    trendNeg: cssv("--trend-neg", el),
-    trendMid: cssv("--trend-mid", el),
-    trendPos: cssv("--trend-pos", el),
-  };
+  const entry = read(scope ?? mapScope());
+  if (!entry.colors) {
+    const v = entry.vars;
+    entry.colors = {
+      paper: v["--paper"],
+      panel: v["--panel"],
+      panel2: v["--panel-2"],
+      ink: v["--ink"],
+      muted: v["--muted"],
+      faint: v["--faint"],
+      rule: v["--rule"],
+      land: v["--land"],
+      ember: [
+        v["--ember-1"],
+        v["--ember-2"],
+        v["--ember-3"],
+        v["--ember-4"],
+        v["--ember-5"],
+      ],
+      lightning: v["--lightning"],
+      human: v["--human"],
+      unknown: v["--unknown"],
+      trendNeg: v["--trend-neg"],
+      trendMid: v["--trend-mid"],
+      trendPos: v["--trend-pos"],
+    };
+  }
+  return entry.colors;
 }
 
 // Ramps index small--->big fire.
 export function emberRamp(scope) {
-  const e = colors(scope).ember;
-  return themeName() === "dark"
-    ? [e[4], e[3], e[2], e[1], e[0]]
-    : [e[0], e[1], e[2], e[3], e[4]];
+  const entry = read(scope ?? mapScope());
+  if (!entry.ember) {
+    const e = colors(scope).ember;
+    entry.ember =
+      themeName() === "dark"
+        ? [e[4], e[3], e[2], e[1], e[0]]
+        : [e[0], e[1], e[2], e[3], e[4]];
+  }
+  return entry.ember;
 }
 
 // Burn severity classes, low -> high.
 export function severityRamp(scope) {
-  const el = scope ?? mapScope();
-  return [cssv("--sev-1", el), cssv("--sev-2", el), cssv("--sev-3", el)];
+  const entry = read(scope ?? mapScope());
+  if (!entry.severity) {
+    const v = entry.vars;
+    entry.severity = [v["--sev-1"], v["--sev-2"], v["--sev-3"]];
+  }
+  return entry.severity;
 }
 
 export function onThemeChange(fn) {
@@ -65,6 +117,7 @@ const MOON_ICON = `<svg viewBox="0 0 24 24" width="15" height="15" fill="none" s
 export function setTheme(name) {
   if (name === "dark") document.documentElement.dataset.theme = "dark";
   else delete document.documentElement.dataset.theme;
+  cache = new WeakMap();
   localStorage.setItem("atlas-theme", name);
   const btn = document.getElementById("theme-btn");
   if (btn)

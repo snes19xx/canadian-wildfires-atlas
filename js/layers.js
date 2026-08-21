@@ -1,4 +1,4 @@
-import * as d3 from "d3";
+import * as d3 from "./vendor/d3.js";
 import { ASPECT, makeSprite } from "./scene.js";
 import { colors, emberRamp, severityRamp, themeName } from "./theme.js";
 
@@ -18,6 +18,9 @@ export class TextureLayers {
   async load(name) {
     if (!this.meta) {
       this.meta = await (await fetch("assets/layers/layers.json")).json();
+    }
+    if (name === "density" && !this.geo) {
+      this.geo = await import("./vendor/d3-contour.js");
     }
     if (!this.images[name]) {
       const img = new Image();
@@ -101,11 +104,11 @@ export class TextureLayers {
         ny = src.height;
       const vals = new Float64Array(nx * ny);
       for (let i = 0; i < vals.length; i++) vals[i] = src.data[i * 4];
-      const toPath = d3.geoPath();
+      const toPath = this.geo.geoPath();
       this._densityContours = {
         nx,
         ny,
-        paths: d3
+        paths: this.geo
           .contours()
           .size([nx, ny])
           .thresholds([1, 43, 86, 128, 170, 213])(vals)

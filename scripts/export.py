@@ -40,36 +40,58 @@ def export_basemap():
     write_json(config.ASSETS / "basemap.json", {"provinces": provinces, "outline": outline})
 
 
+def pack_fires(u, v, ha, t, year0, year1):
+    """Header (4 x uint32) + int16 x, int16 y, uint16 t-deltas, uint32 ha."""
+    n = len(u)
+    xq = np.rint(np.asarray(u, dtype=np.float64) * 1e4).astype(np.int16)
+    yq = np.rint(np.asarray(v, dtype=np.float64) * 1e4).astype(np.int16)
+    tq = np.rint((np.asarray(t, dtype=np.float64) - year0) * 1e3).astype(np.int64)
+    if np.any(np.diff(tq) < 0):
+        raise ValueError("fires must be sorted by t")
+    dt = np.empty(n, dtype=np.uint16)
+    dt[0] = tq[0]
+    dt[1:] = np.diff(tq)
+    haq = np.rint(np.asarray(ha, dtype=np.float64)).astype(np.uint32)
+
+    head = np.array([n, year0, year1, 0], dtype=np.uint32)
+    body = xq.tobytes() + yq.tobytes() + dt.tobytes()
+    body += b"\x00" * (-len(body) % 4)
+    return head.tobytes() + body + haq.tobytes()
+
+
+def read_fires():
+    """Read back what pack_fires wrote: scene x, y, hectares and t."""
+    blob = (config.ASSETS / "fires.bin").read_bytes()
+    n, year0, _, _ = np.frombuffer(blob, np.uint32, 4)
+    n = int(n)
+    o = 16
+    x = np.frombuffer(blob, np.int16, n, o) / 1e4
+    o += 2 * n
+    y = np.frombuffer(blob, np.int16, n, o) / 1e4
+    o += 2 * n
+    dt = np.frombuffer(blob, np.uint16, n, o)
+    o += 2 * n
+    o += -o % 4
+    ha = np.frombuffer(blob, np.uint32, n, o)
+    t = int(year0) + np.cumsum(dt.astype(np.int64)) / 1e3
+    return {"x": x, "y": y, "ha": ha, "t": t}
+
+
 def export_fires(nfdb):
     u, v = project.to_scene(nfdb.LONGITUDE.values, nfdb.LATITUDE.values)
-    named = {}
-    for i, r in enumerate(nfdb.itertuples()):
-        label = str(r.FIRENAME).strip()
-        if r.SIZE_HA >= 100_000 and label and label.lower() != "nan":
-            named[str(i)] = label
-    year_index = {}
     years = nfdb.YEAR.values
-    for y in range(config.MIN_YEAR, int(years.max()) + 1):
-        idx = np.flatnonzero(years == y)
-        if len(idx):
-            year_index[str(y)] = [int(idx[0]), int(idx[-1]) + 1]
-    obj = {
-        "meta": {
-            "n": len(nfdb),
-            "years": [config.MIN_YEAR, int(years.max())],
-            "source": "NFDB_point_20260529_large_fires",
-        },
-        "x": [round(float(a), 4) for a in u],
-        "y": [round(float(b), 4) for b in v],
-        "ha": nfdb.SIZE_HA.round().astype(int).tolist(),
-        "year": nfdb.YEAR.astype(int).tolist(),
-        "month": nfdb.MONTH.astype(int).tolist(),
-        "cause": nfdb.cause.tolist(),
-        "t": nfdb.t.round(3).tolist(),
-        "name": named,
-        "yearIndex": year_index,
-    }
-    write_json(config.ASSETS / "fires.json", obj)
+    blob = pack_fires(
+        np.round(u, 4),
+        np.round(v, 4),
+        nfdb.SIZE_HA.values,
+        nfdb.t.round(3).values,
+        config.MIN_YEAR,
+        int(years.max()),
+    )
+    path = config.ASSETS / "fires.bin"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(blob)
+    print(f"wrote {path.relative_to(config.ROOT)} ({len(blob) / 1e6:.2f} MB, {len(nfdb)} fires)")
 
 
 def export_annual(nfdb, nbac):

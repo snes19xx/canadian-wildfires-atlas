@@ -1,4 +1,5 @@
 import { buildTables, drawAllCharts, drawTrackSpark } from "./charts.js";
+import { loadFires } from "./data.js";
 import { FirmsLayer, TextureLayers } from "./layers.js";
 import { ASPECT, FireScene } from "./scene.js";
 import { initScrolly } from "./scrolly.js";
@@ -15,12 +16,24 @@ const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const el = (id) => document.getElementById(id);
 
+const nextPaint = () =>
+  new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+const pending = {
+  fires: loadFires(),
+  annual: fetch("assets/annual.json").then((r) => r.json()),
+  basemap: fetch("assets/basemap.json").then((r) => r.json()),
+};
+
 async function boot() {
   initTheme();
+
+  await nextPaint();
+
   const [fires, annual, basemap] = await Promise.all([
-    fetch("assets/fires.json").then((r) => r.json()),
-    fetch("assets/annual.json").then((r) => r.json()),
-    fetch("assets/basemap.json").then((r) => r.json()),
+    pending.fires,
+    pending.annual,
+    pending.basemap,
   ]);
 
   const cumHa = new Float64Array(fires.meta.n + 1);
@@ -301,9 +314,6 @@ async function boot() {
     el("scene").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" });
   }
 
-  // Draw the map and charts before the rail
-  drawAllCharts(annual, { onYearClick });
-  buildTables(annual, { onTopHover, onTopLeave });
   setTimelineMode("years");
   syncLegend();
   apply();
@@ -328,6 +338,11 @@ async function boot() {
     const tf = annual.top_fires.find((f) => f.rank === +q.get("scar"));
     if (tf) onTopHover(tf.rank, tf.i);
   }
+
+  await nextPaint();
+
+  drawAllCharts(annual, { onYearClick });
+  buildTables(annual, { onTopHover, onTopLeave });
 
   onThemeChange(() => {
     scene.applyTheme();

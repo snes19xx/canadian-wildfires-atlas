@@ -11,6 +11,8 @@
 
     <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
 
+    <link rel="stylesheet" href="styles/main.css" />
+
     <link
       rel="preload"
       as="font"
@@ -18,19 +20,26 @@
       href="assets/fonts/cmu-serif-500-roman.woff2"
       crossorigin
     />
-    <link rel="stylesheet" href="styles/main.css" />
     <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.css"
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="assets/fonts/cmu-sans-serif-500-roman.woff2"
+      crossorigin
     />
 
-    <script type="importmap">
-      {
-        "imports": {
-          "d3": "https://cdn.jsdelivr.net/npm/d3@7/+esm"
-        }
-      }
-    </script>
+    <link rel="preload" as="fetch" href="assets/fires.bin" crossorigin />
+    <link rel="preload" as="fetch" href="assets/basemap.json" crossorigin />
+    <link rel="preload" as="fetch" href="assets/annual.json" crossorigin />
+
+    <link rel="modulepreload" href="js/main.js" />
+    <link rel="modulepreload" href="js/vendor/d3.js" />
+    <link rel="modulepreload" href="js/theme.js" />
+    <link rel="modulepreload" href="js/data.js" />
+    <link rel="modulepreload" href="js/scene.js" />
+    <link rel="modulepreload" href="js/charts.js" />
+    <link rel="modulepreload" href="js/layers.js" />
+    <link rel="modulepreload" href="js/scrolly.js" />
   </head>
   <body>
     <div class="fold">
@@ -377,21 +386,57 @@
     <div class="tooltip" id="tooltip"></div>
 
     <script type="module" src="js/main.js"></script>
-    <script
-      defer
-      src="https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.js"
-    ></script>
-    <script
-      defer
-      src="https://cdn.jsdelivr.net/npm/katex@0.16/dist/contrib/auto-render.min.js"
-      onload="
-        renderMathInElement(document.querySelector('article'), {
-          delimiters: [
-            { left: '$$', right: '$$', display: true },
-            { left: '\\(', right: '\\)', display: false },
-          ],
-        })
-      "
-    ></script>
+    <script>
+      (() => {
+        const KATEX = "https://cdn.jsdelivr.net/npm/katex@0.16/dist/";
+        let started = false;
+
+        function render() {
+          renderMathInElement(document.querySelector("article"), {
+            delimiters: [
+              { left: "$$", right: "$$", display: true },
+              { left: "\\(", right: "\\)", display: false },
+            ],
+          });
+        }
+
+        function start() {
+          if (started) return;
+          started = true;
+          const css = document.createElement("link");
+          css.rel = "stylesheet";
+          css.href = KATEX + "katex.min.css";
+          document.head.appendChild(css);
+          for (const [file, done] of [
+            ["katex.min.js", null],
+            ["contrib/auto-render.min.js", render],
+          ]) {
+            const s = document.createElement("script");
+            s.src = KATEX + file;
+            s.async = false;
+            if (done) s.onload = done;
+            document.head.appendChild(s);
+          }
+        }
+
+        const eq = document.querySelector(".eq");
+        if (eq) {
+          const io = new IntersectionObserver(
+            (entries) => {
+              if (!entries.some((e) => e.isIntersecting)) return;
+              io.disconnect();
+              start();
+            },
+            { rootMargin: "1500px 0px" },
+          );
+          io.observe(eq);
+        }
+        addEventListener("load", () => {
+          if (window.requestIdleCallback)
+            window.requestIdleCallback(start, { timeout: 3000 });
+          else setTimeout(start, 400);
+        });
+      })();
+    </script>
   </body>
 </html>

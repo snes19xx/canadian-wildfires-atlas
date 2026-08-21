@@ -1,4 +1,4 @@
-import * as d3 from "d3";
+import * as d3 from "./vendor/d3.js";
 import { colors as paletteOf, cssv as varOf } from "./theme.js";
 
 const SF = '"CMU Sans Serif", Helvetica, sans-serif';

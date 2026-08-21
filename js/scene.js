@@ -1,4 +1,4 @@
-import * as d3 from "d3";
+import * as d3 from "./vendor/d3.js";
 import { colors, emberRamp, themeName } from "./theme.js";
 // Canvas world coords: X = u * ASPECT, Y = 1 - v (y grows down).
 export const ASPECT = 1.4979;
